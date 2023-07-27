@@ -26,22 +26,28 @@ import { ResultService } from './services/result/result.service';
 import { Result } from './model/result.entity';
 import { ResultController } from './controllers/results/results.controller';
 import { userSessionModule } from './modules/userSession/userSession.module';
+import { ColorModule } from './modules/color/color.module';
+import { LazyModuleLoader } from '@nestjs/core';
+import { PromptGuidModule } from './modules/promptGuid/promptGuid.module';
 
 
 @Module({
-  imports: [TypeOrmModule.forRoot(configService.getTypeOrmConfig()), TypeOrmModule.forFeature([User, 
-    DesignType,
+  imports: [TypeOrmModule.forRoot(configService.getTypeOrmConfig()), 
+    TypeOrmModule.forFeature([User, 
+     DesignType,
      UserPrompt,
      ImageUploader,
      Result
     ]),
-    userSessionModule,
   JwtModule.register({
     global: true,
     secret: jwtConstants.secret,
     signOptions: { expiresIn: '3d' },
   }),
-  HttpModule
+  HttpModule,
+  userSessionModule,
+  PromptGuidModule,
+  ColorModule
 
 ],
 exports:[CloudinaryProvider]
@@ -66,4 +72,5 @@ export class AppModule implements NestModule {
       .apply(AuthMiddleware)
       .forRoutes('/');
   }
+  
 }

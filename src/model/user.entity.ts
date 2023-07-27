@@ -10,7 +10,7 @@ export class User extends BaseEntity{
   fistName:string;
   
   @Column({name:'l_name', length:250})
-  lastNname:string;
+  lastName:String;
 
   @Column({name:'email', type:'varchar' , length:255, unique:true})
   email: string;
@@ -23,4 +23,7 @@ export class User extends BaseEntity{
 
   @Column({name:'password'})
   password:string;
+
+ // @Column({name:'valid_mail'})
+  //validMail:Boolean;
 }

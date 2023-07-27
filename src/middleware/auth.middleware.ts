@@ -7,11 +7,12 @@ export class AuthMiddleware implements NestMiddleware {
     constructor(private readonly userSessionService:UserSessionService){
 
     }
+    
   use(req: Request, res: Response, next: NextFunction) {
     console.log('AuthMiddleware');
-    console.log(req.headers.authorization);
+   // console.log(req.headers.authorization);
     this.userSessionService.setToken(req.headers.authorization);
-  //  console.log(this.userSessionService.getCurrentUser());
+  // console.log(this.userSessionService.getCurrentUser());
     next();
   }
 }

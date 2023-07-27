@@ -8,7 +8,7 @@ import { type } from "os";
 export class UserPrompt extends BaseEntity{
 
     @Column({name:'user_prompt'})
-    public prompt:string;
+    public prompt:String;
     
      @Column({name:'user_id'})
       userId:number;

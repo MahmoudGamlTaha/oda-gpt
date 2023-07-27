@@ -12,6 +12,8 @@ import { ImageUploader } from "src/model/uploader.entity";
 import { Result } from "src/model/result.entity";
 import { ResultService } from "../result/result.service";
 import { version } from "os";
+import { PromptGuidService } from "../promptGuide/promptGuid.service";
+import { PromptGuide } from "src/model/PromptGuide.entity";
 const axios = require('axios').default;
 const fs = require("fs");
 //https://www.greataiprompts.com/imageprompt/stable-diffusion-anime-prompts/
@@ -26,7 +28,10 @@ export class DressDesignService extends BaseService<UserPrompt, Repository<UserP
      private resultService:ResultService;
      @Inject(UploaderService)
      private uploader:UploaderService;
-    constructor(@InjectRepository(UserPrompt) private readonly userPrompt:Repository<UserPrompt>){
+     @Inject(PromptGuidService)
+     private promptGuidService:PromptGuidService
+     
+     constructor(@InjectRepository(UserPrompt) private readonly userPrompt:Repository<UserPrompt>){
         super(userPrompt);
         this.token = replicateKey.DressDesignKey;
        
@@ -36,17 +41,24 @@ export class DressDesignService extends BaseService<UserPrompt, Repository<UserP
     }
 
     public async getAIDesignDressReplicateV2(designFilter:DesignFilter){
-
       try {
+         
+        let promptGuid:String = await this.promptGuidService.findByTags(designFilter.tag);
+         if(promptGuid == ""){
+            promptGuid = designFilter.prompt;
+         }
+         if(promptGuid == ""){
+          throw  new Error("Something went wrong!");
+         }
         let userPrompt = new UserPrompt();
-        userPrompt.prompt = designFilter.prompt
+        userPrompt.prompt = promptGuid;
         userPrompt.lastUpdatedDate = new Date();
         userPrompt.userId = (await this.getCurrentUser()).id;
         this.save(userPrompt).then((val)=>{
            userPrompt.id = val.id ;
         });
         console.log(userPrompt);
-
+         return "";
 
         const response = await axios.post(
           replicateKey.baseReplicateUrI,

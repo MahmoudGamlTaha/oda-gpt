@@ -19,8 +19,7 @@ export class DressDesignController extends BaseController<DressDesignService> {
        return  this.dressDesignService.uploadDressImage(file);
    }
    @Post('check')
-   async generateRoomDesign (@Body() designFilter:DesignFilter){
-    return  await this.dressDesignService.getAIDesignDressReplicateV2(designFilter);
-
+   async generateRoomDesign (@Body() designFilter:DesignFilter){   
+     return  await this.dressDesignService.getAIDesignDressReplicateV2(designFilter);
    }
 }
