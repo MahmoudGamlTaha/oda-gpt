@@ -26,6 +26,13 @@ export class UserService extends BaseService<User, Repository<User>>{
     public async findById(id:number): Promise<User>{
         return await this.userRepository.findOneBy({id:id});
     }
-
+    
+    public async updateById(identifer: number, attr:any) {
+        console.log(attr);
+        return this.userRepository.update(
+           { id:identifer},
+            attr
+          );   
+    }
 
 }

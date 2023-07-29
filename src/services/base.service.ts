@@ -61,7 +61,8 @@ export abstract class BaseService<entity extends BaseEntity,repository extends R
      const entity =  await this.find();
      return entity != null ? entity[0]: null; 
    }
-  
+     
+
     public getCurrentUser():Promise<User>{
        return this.userSessionService.getCurrentUser();
     }

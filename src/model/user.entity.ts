@@ -16,7 +16,7 @@ export class User extends BaseEntity{
   email: string;
 
   @Column({name:'active'})
-  active:boolean;
+  active:number;
   
   @Column({name:'credit'})
   credit:number;

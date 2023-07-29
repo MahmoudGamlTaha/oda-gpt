@@ -1,4 +1,4 @@
-import { Injectable,  UnauthorizedException } from '@nestjs/common';
+import { Injectable,  UnauthorizedException, HttpException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { BaseService } from '../base.service';
 import { Repository } from 'typeorm';
@@ -18,7 +18,7 @@ export class AuthService extends BaseService<User,Repository<User>>{
   //salt:string;
 async signIn(username:string, password:string) {
    console.log(bcrypt.hashSync(password, saltRounds));
-   const user = await this.authRepository.findOne({where:{email:username}});
+   const user = await this.authRepository.findOne({where:{email:username, active: 1}});
    if(user == null)
       throw new UnauthorizedException();
         console.log(user.password);
@@ -38,22 +38,29 @@ async signIn(username:string, password:string) {
    }
 }
  async register(register:RegisterDto){
-   const checkUser = this.authRepository.findOne({where:{email:register.email,password:register.password}});
+   const checkUser = await this.authRepository.findOne({where:{email:register.email}});
+     console.log(checkUser);
    if(checkUser != null){
-      throw new Error("email exist")
+      throw new HttpException("email exist", StatusCode.ValidationError)
    }
       let user = new User();
-      user.active = true
+      user.active = 1
       user.credit = 0;
       user.email = register.email;
       user.password = register.mobile;
       user.fistName = register.name;
       user.lastName = register.lastName;
+      user.lastUpdatedDate = new Date();
    //   user.validMail = false;
      
       user.password = bcrypt.hashSync(register.password, saltRounds);
       this.save(user);
-      return user.id;
+      register.password = '';
+      return{
+         statusCode:StatusCode.SUCCESS,   
+         message: "userCreated",
+         data:register
+        }
  }
 
 }

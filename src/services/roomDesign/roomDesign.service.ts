@@ -2,7 +2,7 @@ import { UserPrompt } from "src/model/userPrompt.entity";
 import { BaseService } from "../base.service";
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Inject, Injectable, UseGuards } from "@nestjs/common";
+import { HttpException, Inject, Injectable, UseGuards } from "@nestjs/common";
 import { HttpService } from '@nestjs/axios'
 import { DesignFilter } from "src/model/dto/designFilter.dto";
 import Replicate from "replicate";
@@ -10,6 +10,7 @@ import { StatusCode, replicateKey, sleep } from "src/constant/constant";
 import { UploaderService } from "../uploader/uploader.service";
 import { ImageUploader } from "src/model/uploader.entity";
 import { AuthGuard } from "../auth/auth.guard";
+import { UserDto } from "src/model/dto/user.dto";
 const axios = require('axios').default;
 @UseGuards(AuthGuard)
 @Injectable()
@@ -33,17 +34,23 @@ export class RoomDesignService extends BaseService<UserPrompt, Repository<UserPr
       this.relations = ["desginType"];
     }
     public async getAIDesignRoomV2(designFilter:DesignFilter){
-
+      var errMsg:string = null 
       try {
+         let user = (await this.getCurrentUser());
         let userPrompt = new UserPrompt();
         userPrompt.prompt = designFilter.prompt
         userPrompt.lastUpdatedDate = new Date();
-        userPrompt.userId = (await this.getCurrentUser()).id;
+        userPrompt.userId = user.id;
         this.save(userPrompt).then((val)=>{
            userPrompt.id = val.id ;
         });
         console.log(userPrompt);
+        
+        if(user.credit <= 0){
+          errMsg = 'not enough credit';
+          throw new HttpException(errMsg, StatusCode.ValidationError);
 
+        }
 
         const response = await axios.post(
           replicateKey.baseReplicateUrI,
@@ -95,8 +102,13 @@ export class RoomDesignService extends BaseService<UserPrompt, Repository<UserPr
          
         responseData = JSON.parse(JSON.stringify(result.data));
         status = responseData.status;
+        
       }while(status != "succeeded");
          console.log(this.uploadRoomImage(response.output[1]));
+         let userDto = new UserDto();
+         userDto.credit = user.credit;
+         user.lastUpdatedDate = new Date();
+         this.userService.updateById(user.id, userDto);
         return responseData==null?{status:StatusCode.FAIL, message:"fail"}: responseData.output;
       } catch (error) {
         console.log("\n getAIDesignRoomV2 rexception \n");

@@ -2,7 +2,7 @@ import { UserPrompt } from "src/model/userPrompt.entity";
 import { BaseService } from "../base.service";
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Inject, Injectable } from "@nestjs/common";
+import { HttpException, Inject, Injectable } from "@nestjs/common";
 import { HttpService } from '@nestjs/axios'
 import { DesignFilter } from "src/model/dto/designFilter.dto";
 import Replicate from "replicate";
@@ -14,6 +14,8 @@ import { ResultService } from "../result/result.service";
 import { version } from "os";
 import { PromptGuidService } from "../promptGuide/promptGuid.service";
 import { PromptGuide } from "src/model/PromptGuide.entity";
+import { UserService } from "../users/user.service";
+import { UserDto } from "src/model/dto/user.dto";
 const axios = require('axios').default;
 const fs = require("fs");
 //https://www.greataiprompts.com/imageprompt/stable-diffusion-anime-prompts/
@@ -30,6 +32,8 @@ export class DressDesignService extends BaseService<UserPrompt, Repository<UserP
      private uploader:UploaderService;
      @Inject(PromptGuidService)
      private promptGuidService:PromptGuidService
+     @Inject(UserService)
+     private userService:UserService;
      
      constructor(@InjectRepository(UserPrompt) private readonly userPrompt:Repository<UserPrompt>){
         super(userPrompt);
@@ -41,6 +45,7 @@ export class DressDesignService extends BaseService<UserPrompt, Repository<UserP
     }
 
     public async getAIDesignDressReplicateV2(designFilter:DesignFilter){
+      var errMsg:string = null 
       try {
          
         let promptGuid:String = await this.promptGuidService.findByTags(designFilter.tag);
@@ -48,18 +53,28 @@ export class DressDesignService extends BaseService<UserPrompt, Repository<UserP
             promptGuid = designFilter.prompt;
          }
          if(promptGuid == ""){
-          throw  new Error("Something went wrong!");
+          errMsg = "prompt required";
+          throw  new Error(errMsg);
          }
+         let user = (await this.getCurrentUser());
         let userPrompt = new UserPrompt();
         userPrompt.prompt = promptGuid;
         userPrompt.lastUpdatedDate = new Date();
-        userPrompt.userId = (await this.getCurrentUser()).id;
+        userPrompt.userId = user.id;
         this.save(userPrompt).then((val)=>{
            userPrompt.id = val.id ;
         });
         console.log(userPrompt);
-         return "";
+        if(user.credit <= 0){
+          errMsg = 'not enough credit';
+          throw new HttpException(errMsg, StatusCode.ValidationError);
+        }
 
+      
+      
+     //  return [
+ //       "https://pbxt.replicate.delivery/M0QjygdSqbbeUCHc1Uc7E8N0gsFbUpFGbmS3AwKBYBY77OqIA/out-0.png"
+    //];
         const response = await axios.post(
           replicateKey.baseReplicateUrI,
           {
@@ -102,7 +117,7 @@ export class DressDesignService extends BaseService<UserPrompt, Repository<UserP
         //check status return from get //"status": "succeeded"
         let result = await axios.get(getUrl,{
           headers:{
-           "Content-Type": "application/json",
+            "Content-Type": "application/json",
             "Authorization": this.token,
           }
         });
@@ -136,11 +151,19 @@ export class DressDesignService extends BaseService<UserPrompt, Repository<UserP
         console.log("save result");
         console.log(results);
        this.resultService.saveAll(results);
-
+        user.credit = user.credit - 1;
+        let userDto = new UserDto();
+        userDto.credit = user.credit;
+        user.lastUpdatedDate = new Date();
+        this.userService.updateById(user.id, userDto);
         return responseData==null?{status:StatusCode.FAIL, message:"fail"}: responseData.output;
       } catch (error) {
         console.log("\n getAIDesignDressReplicateV2 rexception \n");
         console.error(error);
+        return {
+          status:StatusCode.FAIL,
+          message:errMsg==null?error:errMsg
+        }
       }
 }
 

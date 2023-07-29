@@ -20,7 +20,6 @@ export class UserSessionService  {
       //    return  await this.userService.findById(this.userId);
          if(this.token != null){
             const session = await this.userSessionRepository.find({where:{token: this.token,endAt:MoreThanOrEqual(new Date())}, relations:["user"]});
-           console.log(session);
             return session[0]!=null?session[0].user:null;
         }
         return null;
