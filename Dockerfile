@@ -3,7 +3,7 @@ WORKDIR .
 COPY package*.json ./
 # Install project dependencies
 RUN npm install
-COPY .
+COPY . .
 RUN npm run build
 EXPOSE 3000/tcp
 CMD [ "node", "dist/main.js" ]
