@@ -11,6 +11,7 @@ import { UploaderService } from "../uploader/uploader.service";
 import { ImageUploader } from "src/model/uploader.entity";
 import { AuthGuard } from "../auth/auth.guard";
 import { UserDto } from "src/model/dto/user.dto";
+import { UserService } from "../users/user.service";
 const axios = require('axios').default;
 @UseGuards(AuthGuard)
 @Injectable()
@@ -22,8 +23,10 @@ export class RoomDesignService extends BaseService<UserPrompt, Repository<UserPr
    //  private  replicate:Replicate;
      @Inject(UploaderService)
      private uploader:UploaderService;
-    constructor(@InjectRepository(UserPrompt) private readonly userPrompt:Repository<UserPrompt>){
-        super(userPrompt);
+     @Inject(UserService)
+     private userService:UserService;
+    constructor(@InjectRepository(UserPrompt) private readonly userPromptRepository:Repository<UserPrompt>){
+        super(userPromptRepository);
         this.token = replicateKey.roomDesignKey;
        
     }
