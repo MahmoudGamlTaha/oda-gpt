@@ -1,25 +1,16 @@
-
-# Use the node:14-alpine image as base
-FROM node:14-alpine
-
-# Set working directory to /usr/src/app
-WORKDIR /usr/app/src
-
-# Copy package.json and package-lock.json to the working directory
-COPY package*.json ./
-
-# Install project dependencies
+FROM node:14-alpine AS build
+WORKDIR /usr/src/app
+COPY package*.json  ./
 RUN npm ci
-
-# Copy all files and directories to the working directory
 COPY . .
+RUN npm run build && npm prune --production
 
-# Build the project
-RUN npm run build
+# Production
+FROM node:20-alpine AS production
+WORKDIR /usr/src/app
 
-# Expose port 3000 for incoming traffic
-EXPOSE 3000
+COPY  --from=build usr/src/app/dist ./dist
+COPY  --from=build usr/src/app/node_modules ./node_modules
 
-# Run the application
-CMD npm start > logs.txt
-#CMD [ "node", "dist/main.js" ]
+EXPOSE 3000/tcp
+CMD [ "node", "dist/main.js" ]
