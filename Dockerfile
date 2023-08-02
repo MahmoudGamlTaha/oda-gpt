@@ -1,9 +1,9 @@
 
 # Use the node:14-alpine image as base
-FROM node:16-alpine
+FROM node:14-alpine
 
 # Set working directory to /usr/src/app
-WORKDIR /usr/src/app
+WORKDIR /usr/app/src
 
 # Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
@@ -21,4 +21,5 @@ RUN npm run build
 EXPOSE 3000
 
 # Run the application
-CMD [ "node", "dist/main.js" ]
+CMD npm start > logs.txt
+#CMD [ "node", "dist/main.js" ]
