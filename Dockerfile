@@ -17,10 +17,10 @@ FROM node:14-alpine AS production
 # Set the working directory inside the container
 WORKDIR /usr/app/src
 
-# Copy the built files from the build stage to the productionCOPY stage  --from=
-build /usr/src/app/dist ./dist
+# Copy the built files from the build stage to the production stage
+COPY --from=build /usr/src/app/dist ./dist
 # Copy the required dependencies from the build stage to the production stage
-COPY  --=frombuild /usr/src/app/node_modules ./node_modules
+COPY --from=build /usr/src/app/node_modules ./node_modules
 
 # Expose port 3000 for the application
 EXPOSE 3000
