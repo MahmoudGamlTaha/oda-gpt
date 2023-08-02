@@ -13,6 +13,7 @@ RUN npm ci
 
 # Copy all files and directories to the working directory
 COPY . .
+<<<<<<< HEAD
 
 # Build the project
 RUN npm run build
