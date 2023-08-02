@@ -15,14 +15,15 @@ RUN npm run build && npm prune --production
 # Use node:14-alpine as the base image for the production stage
 FROM node:14-alpine AS production
 # Set the working directory inside the container
-WORKDIR /usr/src/app
+WORKDIR /usr/app/src
 
-# Copy the built files from the build stage to the production stage
-COPY  --from=build /usr/src/app/dist ./dist
+# Copy the built files from the build stage to the productionCOPY stage  --from=
+build /usr/src/app/dist ./dist
 # Copy the required dependencies from the build stage to the production stage
-COPY  --from=build /usr/src/app/node_modules ./node_modules
+COPY  --=frombuild /usr/src/app/node_modules ./node_modules
 
 # Expose port 3000 for the application
-EXPOSE 3000/tcp
+EXPOSE 3000
+
 # Set the command to run the application when the container starts
 CMD [ "node", "dist/main.js" ]
