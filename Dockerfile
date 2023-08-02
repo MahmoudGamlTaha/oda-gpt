@@ -1,28 +1,25 @@
 
-# Use node:14-alpine as the base image for the build stage
-FROM node:14-alpine AS build
-# Set the working directory inside the container
-WORKDIR /usr/src/app
-# Copy package.json and package-lock.json (or package*.json) to the working directory
-COPY package*.json  ./
-# Install the project dependencies using npm ci command
+# Use the node:14-alpine image as base
+FROM node:14-alpine
+
+# Set working directory to /usr/src/app
+WORKDIR /usr/app/src
+
+# Copy package.json and package-lock.json to the working directory
+COPY package*.json ./
+
+# Install project dependencies
 RUN npm ci
+
 # Copy all files and directories to the working directory
 COPY . .
-# Build the project and remove unnecessary dependencies using npm run build and npm prune --production commands
-RUN npm run build && npm prune --production
 
-# Use node:14-alpine as the base image for the production stage
-FROM node:14-alpine AS production
-# Set the working directory inside the container
-WORKDIR /usr/src/app
+# Build the project
+RUN npm run build
 
-# Copy the built files from the build stage to the production stage
-COPY  --from=build /usr/src/app/dist ./dist
-# Copy the required dependencies from the build stage to the production stage
-COPY  --from=build /usr/src/app/node_modules ./node_modules
+# Expose port 3000 for incoming traffic
+EXPOSE 3000
 
-# Expose port 3000 for the application
-EXPOSE 3000/tcp
-# Set the command to run the application when the container starts
-CMD [ "node", "dist/main.js" ]
+# Run the application
+CMD npm start > logs.txt
+#CMD [ "node", "dist/main.js" ]
