@@ -9,12 +9,26 @@ class ConfigService {
   constructor(private env: { [k: string]: string | undefined }) { }
 
   private getValue(key: string, throwOnMissing = true): string {
-    const value = this.env[key];
+/*    const value = this.env[key];
     if (!value && throwOnMissing) {
       throw new Error(`config error - missing env.${key}`);
     }
-
-    return value;
+*/
+switch(key){
+  case 'PORT':
+    return '32768';
+  
+  case 'POSTGRES_HOST':
+    return '164.68.108.28';
+  case 'POSTGRES_DATABASE':
+    return 'designodagptdb';
+    case 'POSTGRES_USER':
+    return 'postgres' 
+    case 'password':
+      return '4ee$45%ef4i';
+}
+throw new Error(`config error - missing env.${key}`);
+    //return value;
   }
 
   public ensureValues(keys: string[]) {
@@ -58,7 +72,7 @@ class ConfigService {
        // migrationsDir: 'src/dbMigration',
       //},
 
-      ssl: this.isProduction(),
+      ssl: false,//this.isProduction(),
     };
   }
 
