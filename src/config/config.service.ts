@@ -32,20 +32,20 @@ class ConfigService {
   }
 
   public getTypeOrmConfig(): TypeOrmModuleOptions {
-    console.log(this.getValue('POSTGRES_HOST'));
+    /*console.log(this.getValue('POSTGRES_HOST'));
     console.log( this.getValue('POSTGRES_DATABASE'));
     console.log(this.getValue('POSTGRES_PASSWORD'));
     console.log(this.getValue('POSTGRES_PORT'));
     console.log(this.getValue('POSTGRES_USER'));
-
+*/
     return {
       type: 'postgres',
 
-      host: this.getValue('POSTGRES_HOST'),
-      port: parseInt(this.getValue('POSTGRES_PORT')),
-      username: this.getValue('POSTGRES_USER'),
-      password: this.getValue('POSTGRES_PASSWORD'),
-      database: this.getValue('POSTGRES_DATABASE'),
+      host: '164.68.108.28',//this.getValue('POSTGRES_HOST'),
+      port: 32768,//parseInt(this.getValue('POSTGRES_PORT')),
+      username: 'postgres',//this.getValue('POSTGRES_USER'),
+      password: '4ee$45%ef4i',//this.getValue('POSTGRES_PASSWORD'),
+      database: 'designodagptdb',//this.getValue('POSTGRES_DATABASE'),
     //  logging: "all", 
       //entities: ['**/*.entity{.ts,.js}'],
       entities: [__dirname + '/../**/*.entity.js'] ,
