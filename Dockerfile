@@ -1,6 +1,6 @@
 
 # Use node:14-alpine as the base image for the build stage
-FROM node:14-alpine AS build
+FROM node:16-alpine AS build
 # Set the working directory inside the container
 WORKDIR /usr/src/app
 # Copy package.json and package-lock.json (or package*.json) to the working directory
