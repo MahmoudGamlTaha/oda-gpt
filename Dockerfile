@@ -24,6 +24,6 @@ COPY  --from=build /usr/src/app/node_modules ./node_modules
 
 # Expose port 3000 for the application
 EXPOSE 3000/tcp
-
+COPY .env /dist/
 # Set the command to run the application when the container starts
 CMD [ "node", "./dist/main.js" ]
