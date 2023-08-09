@@ -134,7 +134,7 @@ export class DressDesignService extends BaseService<UserPrompt, Repository<UserP
          var max = await this.resultService.getMaxId(); 
           responseData.output.forEach( (url) => {
          //const fileWriter = fs.createWriteStream( `./generatedImages/replicate/dresses/v1_txt2img_${index}.png`); 
-         let imagePath = `../generatedImages/replicate/dresses/dress_txt2img_${uid}_${max}.png`
+         let imagePath = `/var/www/vhosts/odagpt.com/httpdocs/generatedImages/replicate/dresses/dress_txt2img_${uid}_${max}.png`
               let result = new Result();
               result.lastUpdatedDate = new Date();
               result.promptId = userPrompt.id;
