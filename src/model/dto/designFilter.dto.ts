@@ -1,6 +1,6 @@
 
 export class DesignFilter{
-  prompt:string;
+  prompt:String;
   typeId:Number;
   tag:any[];
   filePath:string;

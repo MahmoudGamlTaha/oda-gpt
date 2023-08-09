@@ -51,6 +51,8 @@ export class DressDesignService extends BaseService<UserPrompt, Repository<UserP
         let promptGuid:String = await this.promptGuidService.findByTags(designFilter.tag);
          if(promptGuid == ""){
             promptGuid = designFilter.prompt;
+         }else{
+           designFilter.prompt = promptGuid;
          }
          if(promptGuid == ""){
           errMsg = "prompt required";
