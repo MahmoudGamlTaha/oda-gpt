@@ -142,7 +142,7 @@ export class DressDesignService extends BaseService<UserPrompt, Repository<UserP
               result.lastUpdatedDate = new Date();
               result.promptId = userPrompt.id;
               result.userId = uid 
-              result.result = process.env.BASE_URL +''+ process.env.vLinkDressUrl+`dress_txt2img_${uid}_${max}.png`;
+              result.result = process.env.BASE_URL +''+ process.env.vLinkDressUrl+`/dress_txt2img_${uid}_${max}.png`;
               result.resultType = ResultType.IMAGE_URL
               results.push(result);
               max++;
