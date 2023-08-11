@@ -16,6 +16,7 @@ import { PromptGuidService } from "../promptGuide/promptGuid.service";
 import { PromptGuide } from "src/model/PromptGuide.entity";
 import { UserService } from "../users/user.service";
 import { UserDto } from "src/model/dto/user.dto";
+require('dotenv').config();
 const axios = require('axios').default;
 const fs = require("fs");
 //https://www.greataiprompts.com/imageprompt/stable-diffusion-anime-prompts/
@@ -38,6 +39,8 @@ export class DressDesignService extends BaseService<UserPrompt, Repository<UserP
      constructor(@InjectRepository(UserPrompt) private readonly userPrompt:Repository<UserPrompt>){
         super(userPrompt);
         this.token = replicateKey.DressDesignKey;
+        console.log('3333333333333333333333333');
+        console.log(process.env.vLinkDressUrl);
        
     }
     public async uploadDressImage(file: Express.Multer.File){
@@ -139,7 +142,7 @@ export class DressDesignService extends BaseService<UserPrompt, Repository<UserP
               result.lastUpdatedDate = new Date();
               result.promptId = userPrompt.id;
               result.userId = uid 
-              result.result = imagePath;
+              result.result = process.env.BASE_URL +''+ process.env.vLinkDressUrl+`dress_txt2img_${uid}_${max}.png`;
               result.resultType = ResultType.IMAGE_URL
               results.push(result);
               max++;
@@ -148,7 +151,6 @@ export class DressDesignService extends BaseService<UserPrompt, Repository<UserP
        
        for  (let i = 0; i< paths.length; i++){
            let sucess = this.downloadImage(paths[i][1], paths[i][0]);
-           console.log(sucess);
         }
         console.log("save result");
         console.log(results);
