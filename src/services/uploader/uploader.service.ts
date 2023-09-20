@@ -2,10 +2,10 @@ import { Repository } from "typeorm";
 import { BaseService } from "../base.service";
 import { ImageUploader } from "src/model/uploader.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Injectable } from "@nestjs/common";
-import multer from "multer";
+import { Injectable, UploadedFile, UseInterceptors } from "@nestjs/common";
 import  {UploadApiErrorResponse, UploadApiResponse, v2} from "cloudinary"
 import { resolve } from "path";
+const fs = require("fs");
 //import toStream = require('buffer-to-stream');
 const streamifier = require('streamifier');
 
@@ -18,7 +18,7 @@ export class UploaderService extends BaseService<ImageUploader, Repository<Image
         
      }
      async uploadFile(file:Express.Multer.File){
-      return await this.CloudinaryUpload(file);
+      return await this.ServerUpload(file);
      }
      private  CloudinaryUpload(file:Express.Multer.File): Promise<UploadApiResponse | UploadApiErrorResponse>{
 
@@ -31,8 +31,20 @@ export class UploaderService extends BaseService<ImageUploader, Repository<Image
        streamifier.createReadStream(file.buffer).pipe(upload);
   });
   
- }
+ }    
      private async ServerUpload(file:Express.Multer.File){
+       let uid = (await this.getCurrentUser()).id;
+       let max = await this.getMaxUploadByUid(uid);
+      let uploadPath = `../uploadedImages/rooms/room_txt2img_${uid}_${max}.png`;
+       fs.writeFileSync(uploadPath, file.buffer);
 
+     }
+
+     private async getMaxUploadByUid(uid:Number){
+        let queryBuilder = this.imageUploaderRepository.createQueryBuilder('uploader');
+            queryBuilder.select("COALESCE(Max(uploader.id),0) + 1",'maxId').where(`uploader.userId =:uid`,{uid}).addGroupBy("uploader.userId") ;
+            const result =  await queryBuilder.getRawOne();
+  
+                return result.maxId == null? 1 : result.maxId;
      }
 }

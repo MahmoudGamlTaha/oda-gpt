@@ -22,7 +22,6 @@ export class PromptGuidService extends BaseService<PromptGuide, Repository<Promp
    }
    public async findByTags(tag:any):Promise<String>{
       const colors = ["Red", "Blue", "yellow", "maroon", "white", "black", "green", "purple"];
-      console.log("color length"+ colors.length);
       let color = colors[this.generateRandom(colors.length)];
       let condition = {};
       if(tag["style"]){

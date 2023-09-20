@@ -39,7 +39,6 @@ export class DressDesignService extends BaseService<UserPrompt, Repository<UserP
      constructor(@InjectRepository(UserPrompt) private readonly userPrompt:Repository<UserPrompt>){
         super(userPrompt);
         this.token = replicateKey.DressDesignKey;
-        console.log('3333333333333333333333333');
         console.log(process.env.vLinkDressUrl);
        
     }

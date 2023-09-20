@@ -109,7 +109,7 @@ export class RoomDesignService extends BaseService<UserPrompt, Repository<UserPr
       }while(status != "succeeded");
          console.log(this.uploadRoomImage(response.output[1]));
          let userDto = new UserDto();
-         userDto.credit = user.credit;
+         userDto.credit = user.credit - 1;
          user.lastUpdatedDate = new Date();
          this.userService.updateById(user.id, userDto);
         return responseData==null?{status:StatusCode.FAIL, message:"fail"}: responseData.output;

@@ -67,10 +67,17 @@ exports:[CloudinaryProvider]
               HttpModule],
 })
 export class AppModule implements NestModule {
+  constructor(public loader: LazyModuleLoader){
+
+  }
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AuthMiddleware)
       .forRoutes('/');
   }
-  
+  //https://docs.nestjs.com/fundamentals/lazy-loading-modules
+  async onApplicationBootstrap() {
+  //this.loader.load(()=> ColorModule);
+    console.log('lazy module was loaded');
+  }
 }
